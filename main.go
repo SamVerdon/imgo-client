@@ -15,30 +15,23 @@ func createMultipartFormData(fieldName, fileName string) (bytes.Buffer, *multipa
 	var err error
 	w := multipart.NewWriter(&b)
 	var fw io.Writer
-	file := mustOpen(fileName)
+	file, err := os.Open(fileName)
+	if err != nil {
+		log.Fatal(err)
+	}
 	if fw, err = w.CreateFormFile(fieldName, file.Name()); err != nil {
-		log.Fatal("Error creating writer: %v", err)
+		log.Fatal(err)
 	}
 	if _, err = io.Copy(fw, file); err != nil {
-		log.Fatal("Error with io.Copy: %v", err)
+		log.Fatal(err)
 	}
 	w.Close()
 	return b, w
 }
 
-func mustOpen(f string) *os.File {
-	r, err := os.Open(f)
-	if err != nil {
-		pwd, _ := os.Getwd()
-		fmt.Println("PWD: ", pwd)
-		panic(err)
-	}
-	return r
-}
-
 func main() {
-	serverAddress := "localhost"
-	serverPort := 8080
+	serverAddress := "192.168.1.133"
+	serverPort := 80
 	url := fmt.Sprintf("http://%s:%d/upload/image.png", serverAddress, serverPort)
 
 	b, w := createMultipartFormData("image", "/dev/stdin")
