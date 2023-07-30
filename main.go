@@ -52,11 +52,14 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("Status code %d\n", res.StatusCode)
+
+	if res.StatusCode != 200 {
+		fmt.Print(res.Status)
+	}
 
 	resBody, err := io.ReadAll(res.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(string(resBody))
+	fmt.Print(string(resBody))
 }
